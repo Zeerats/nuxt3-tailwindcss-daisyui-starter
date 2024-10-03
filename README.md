@@ -1,75 +1,116 @@
-# Nuxt 3 Minimal Starter (with Sanctum auth)
+# Nuxt 3 Template with TailwindCSS, DaisyUI, and Laravel Sanctum Auth
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This is a starter template for building a Nuxt 3 project with TailwindCSS and DaisyUI for styling, Roboto Mono as the default font, and Laravel Sanctum authentication already set up to work with a Laravel API as the backend.
 
-## Setup
+## Features
 
-Make sure to install the dependencies:
+- **Nuxt 3** for a modern Vue.js development experience.
+- **TailwindCSS** for utility-first CSS styling.
+- **DaisyUI** for pre-built UI components on top of TailwindCSS.
+- **Roboto Mono** set as the default font for a sleek, mono-spaced look.
+- **Laravel Sanctum Authentication** fully integrated with a Laravel API backend.
 
-```bash
-# npm
-npm install
+## Installation
 
-# pnpm
-pnpm install
+1. **Clone the repository**:
+    ```bash
+    git clone <your-repository-url>
+    cd <your-repository-directory>
+    ```
 
-# yarn
-yarn install
+2. **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-# bun
-bun install
+3. **Configure environment variables** (depracated):
+    - Create a `.env` file in the project root with the following environment variables:
+      ```bash
+      NUXT_API_BASE_URL=http://localhost:80/api
+      NUXT_PUBLIC_BACKEND_URL=http://localhost:80
+      ```
+
+4. **Run the development server**:
+    ```bash
+    npm run dev
+    ```
+
+## TailwindCSS & DaisyUI
+
+This project includes TailwindCSS and DaisyUI for a customizable and responsive design. 
+
+TailwindCSS is configured with a custom font (`Roboto Mono`) set as the default:
+
+```css
+/* tailwind.config.js */
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        mono: ['Roboto Mono', 'monospace'],
+      },
+    },
+  },
+  plugins: [require('daisyui')],
+};
 ```
 
-## Development Server
+## Laravel API Backend
 
-Start the development server on `http://localhost:3000`:
+The backend is a Laravel 11 API that serves as the authentication provider using Sanctum. Here's a quick rundown of the API routes and configuration.
 
-```bash
-# npm
-npm run dev
+### API Routes
 
-# pnpm
-pnpm run dev
+```php
+// Login route
+Route::post('/login', [AuthController::class, 'login']);
 
-# yarn
-yarn dev
+// Logout route (requires authentication)
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth:sanctum');
 
-# bun
-bun run dev
+// Authenticated user route (requires authentication)
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 ```
 
-## Production
+### CORS Configuration
 
-Build the application for production:
+The following CORS settings allow your Nuxt app (running on `http://localhost:3000`) to communicate with your Laravel API:
 
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+```php
+'paths' => ['api/*', 'sanctum/csrf-cookie'],
+'allowed_methods' => ['*'],
+'allowed_origins' => ['http://localhost:3000'],
+'allowed_origins_patterns' => [],
+'allowed_headers' => ['*'],
+'exposed_headers' => [],
+'max_age' => 0,
+'supports_credentials' => true,
 ```
 
-Locally preview production build:
+### Stateful Middleware Configuration
 
-```bash
-# npm
-npm run preview
+In Laravel 11, the stateful middleware configuration is now defined within `bootstrap/app.php`. The setup is as follows:
 
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+```php
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
+    })
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### Sanctum Setup
+
+Sanctum now comes pre-installed with Laravel 11, so no additional setup is required. There’s no need to register a provider or install any additional packages.
+
+## Authentication Flow
+
+1. **Login**: The Nuxt frontend uses Sanctum's `/login` route to authenticate users.
+2. **Session Handling**: Sanctum manages the session via cookies, enabling secure, stateful authentication.
+3. **Logout**: The `/logout` route invalidates the user's session.
+4. **Fetch User**: Once authenticated, the frontend can retrieve the logged-in user via the `/user` route.
+
+## License
+
+This project is open-source and licensed under the [MIT License](LICENSE).
