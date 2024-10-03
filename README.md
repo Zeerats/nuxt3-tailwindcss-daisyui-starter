@@ -14,8 +14,8 @@ This is a starter template for building a Nuxt 3 project with TailwindCSS and Da
 
 1. **Clone the repository**:
     ```bash
-    git clone <your-repository-url>
-    cd <your-repository-directory>
+    git clone git@github.com:Zeerats/nuxt3-tailwindcss-daisyui-starter.git
+    cd nuxt3-tailwindcss-daisyui-starter
     ```
 
 2. **Install dependencies**:
